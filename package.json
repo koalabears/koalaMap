@@ -1,0 +1,28 @@
+{
+  "name": "koala-map",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "istanbul cover tape test/back-end/*.js",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/koalabears/koalaMap.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/koalabears/koalaMap/issues"
+  },
+  "homepage": "https://github.com/koalabears/koalaMap#readme",
+  "devDependencies": {
+    "istanbul": "^0.4.0",
+    "shot": "^1.7.0",
+    "tape": "^4.2.1"
+  }
+}
