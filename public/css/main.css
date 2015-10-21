@@ -1,6 +1,6 @@
 /*main.css*/
 #polygon {
-  /*fill: none;*/
+  fill: none;
   stroke: #FFCC00;
   stroke-width: 1;
 }
