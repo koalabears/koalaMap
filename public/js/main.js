@@ -59,6 +59,7 @@ function drawPolygon(poly){
            .attr('stroke-width', 0.4)
            .attr('id', 'myLine')
            .attr('fill', 'none')
+           .style("stroke-opacity", 0.1)
            .attr("d", d3.svg.line()
              .interpolate("linear")
            );
