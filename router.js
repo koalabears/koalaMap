@@ -6,8 +6,8 @@ var routes = {
   "/" : handler.home,
   '404' : handler.notFound,
   '/favicon.ico' : handler.favicon,
-  '/mainjs' : handler.mainJs,
-  '/maincss' : handler.mainCss,
+  '/main.js' : handler.mainJs,
+  '/main.css' : handler.mainCss,
   '/index' :handler.index
 };
 
