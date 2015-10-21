@@ -1,6 +1,10 @@
 /*main.css*/
 #polygon {
-  fill: white;
+  /*fill: none;*/
   stroke: #FFCC00;
   stroke-width: 1;
 }
+/*
+#myLine path{
+  background-color: rgba(255,0,0,0.1);
+}*/

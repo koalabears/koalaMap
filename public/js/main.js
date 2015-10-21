@@ -14,12 +14,35 @@ function createPolygonCoordinates(values){
 }
 
 
-
 function drawPolygon(poly){
-  var visual = d3.select("#polygon").append("svg")
+
+
+  var container = d3.select("#polygon").append("svg")
     .attr("width", 1000)
     .attr("height", 667);
 
+
+
+
+
+       var path = container.append("path")
+        .data([poly])
+        .attr('stroke', 'red')
+        .attr('stroke-width', 2)
+        .attr("d", d3.svg.line()
+          .tension(0.5)
+          .interpolate("cardinal-closed")
+        );
+        container.append("path")
+         .data([[[0, 0], [100, 100]]])
+         .attr('fill', 'transparent')
+         .attr('stroke', 'blue')
+         .attr('stroke-width', 2)
+         .attr('id', 'myLine')
+         .attr('fill', 'none')
+         .attr("d", d3.svg.line()
+           .interpolate("linear")
+         );
   // var scaleX = d3.scale.linear()
   //   .domain([-2,2])
   //   .range([0,100]);
@@ -27,13 +50,11 @@ function drawPolygon(poly){
   // var scaleY = d3.scale.linear()
   //   .domain([-2, 2])
   //   .range([0,100]);
-console.log(poly);
- var path = visual.append("path")
-  .data([poly])
-  .attr("d", d3.svg.line()
-    .tension(0.5)
-    .interpolate("cardinal-closed")
-  );
+
+
+//
+// console.log(poly);
+
 
 //
 // visual.selectAll("polygon")
