@@ -1,6 +1,6 @@
 /*main.css*/
 #polygon {
   fill: white;
-  stroke: purple;
-  stroke-width: 3;
+  stroke: #FFCC00;
+  stroke-width: 1;
 }
