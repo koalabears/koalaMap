@@ -19,7 +19,7 @@ var headersCss = {
 
 handler.home = function(req, res){
   res.writeHead(200, headersHtml);
-  res.end('You are home');
+  res.end(index);
 };
 
 handler.notFound = function(req, res){
