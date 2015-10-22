@@ -1,4 +1,9 @@
-getTFLArrivals(handleArrivalData);
+var socket = io();
+
+socket.on('update poly', function(poly){
+  var newPoly = poly;
+  console.log(newPoly);
+});
 
 function getTFLArrivals(callback) {
   var arrivalDataRequest = new XMLHttpRequest();
@@ -22,10 +27,6 @@ function handleArrivalData(arrivalData) {
   // console.log(blobCoordinates);
   drawPolygon(blobCoordinates);
 }
-
-// var timeUntilStation = [1, 0.2, 0.8, 1, 0.1, 0.6, 0.9, 0.7, 0.3, 1, 0.2, 0.8, 1, 0.1, 0.6, 0.9, 0.7, 0.3, 0.4, 0.5, 0, 0.2, 0.8, 1, 0.1, 0.6, 0.9, 0.7, 0.3, 0.4, 0.5, 0.6, 1, 0.8, 0.9, 1];
-// var blobCoords = createPolygonCoordinates(timeUntilStation);
-// drawPolygon(blobCoords);
 
 
 function createPolygonCoordinates(values) {
@@ -71,7 +72,7 @@ function drawPolygon(poly) {
 
   var startData = ourTransform(poly);
   var newData = poly.map(function(point) {
-    return [point[0]*.5, point[1]*.5];
+    return [point[0]*0.5, point[1]*0.5];
   });
   newData = ourTransform(newData);
 
@@ -146,7 +147,7 @@ function animate(pathCreate, newData) {
     .transition()
     .ease('linear')
     .duration(1000)
-    .attr('d', pathCreate)
+    .attr('d', pathCreate);
 }
 
 function updatePoints(points) {
@@ -155,7 +156,7 @@ function updatePoints(points) {
   return points.map(function (point) {
     var norm = vectorNormal(point);
     if (vectorLength(point) < 1 + velocity) {
-      return norm
+      return norm;
     } else {
       return vectorPlus(point, vectorMult(norm, -1*velocity));
     }
