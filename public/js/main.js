@@ -69,7 +69,8 @@ function drawPolygon(poly) {
       .attr('fill', 'transparent')
       .attr('stroke', 'black')
       .attr('stroke-width', 0.4)
-      .attr('stroke-dasharray',"15,10")
+      .style("stroke-opacity", 0.4)
+      .style("stroke-dasharray", ("3, 1"))
       .attr('id', 'myLine')
       .attr('fill', 'none')
       .attr("d", d3.svg.line()
@@ -93,4 +94,5 @@ function drawPolygon(poly) {
       .attr("cy", pos[1])
       .style("fill", "black");
   });
+
 }
