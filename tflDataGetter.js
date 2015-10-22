@@ -25,6 +25,7 @@ function processData(rawArrivalData) {
   });
   allStationArrivalInfo = removeUnfoundStations(allStationArrivalInfo);
   clockwiseData = filterByDirection('clockwise', allStationArrivalInfo);
+  console.log(createArrivalOutputData(clockwiseData));
   return JSON.stringify(createArrivalOutputData(clockwiseData));
 }
 
@@ -32,7 +33,6 @@ function makeArrivalDataRequests(callback) {
   var options = createArrivalDataRequestOptions();
   var apiKey = process.env.app_key;
   var apiId = process.env.app_id;
-  // path : '/Line/Circle/arrivals?app_id=' + apiKey + '&app_key=' + apiId,
   var postData = querystring.stringify({
       app_key: apiKey,
       app_id: apiId
@@ -43,29 +43,13 @@ function makeArrivalDataRequests(callback) {
       body += chunk;
     });
     response.on('end', function(){
-      // console.log('body', body);
-      // console.log('body end');
       callback(JSON.parse(body));
     });
   });
   request.end(postData);
-  // var arrivalDataRequest = new XMLHttpRequest();
-  // arrivalDataRequest.open('GET', createArrivalDataRequestURL());
-  // arrivalDataRequest.onreadystatechange = function() {
-  //   if (arrivalDataRequest.readyState === 4) {
-  //     if (arrivalDataRequest.status === 200) {
-  //       callback(JSON.parse(arrivalDataRequest.responseText));
-  //     } else {
-  //       console.log('error. state = ', arrivalDataRequest.status);
-  //     }
-  //   }
-  // }
-  // arrivalDataRequest.send();
 }
 
 function createArrivalDataRequestOptions(){
-  // var apiKey = process.env.app_key;
-  // var apiId = process.env.app_id;
   return {
     hostname : 'api.tfl.gov.uk',
     path : '/Line/Circle/arrivals',
@@ -75,7 +59,7 @@ function createArrivalDataRequestOptions(){
 
 function createArrivalOutputData(arrivalData) {
   var out = stopOrder.map(function(stopName, stopIndex) {
-    return getShortestTimeForStationNumber(stopIndex, arrivalData) + 1;
+    return getShortestTimeForStationNumber(stopIndex, arrivalData);
   });
   return out;
 }
@@ -99,14 +83,14 @@ function removeUnfoundStations(allStationArrivalInfo) {
   });
 }
 
-function dataToCoords(numberOfPoints, values) {
-  console.log(values);
-  return values.map(function(value, i) {
-    var angle = (i/numberOfPoints)*2*Math.PI;
-    var r = value;
-    return [(r*Math.cos(angle)+2)*100, (r*Math.sin(angle)+2)*100];
-  });
-}
+// function dataToCoords(numberOfPoints, values) {
+//   console.log(values);
+//   return values.map(function(value, i) {
+//     var angle = (i/numberOfPoints)*2*Math.PI;
+//     var r = value;
+//     return [(r*Math.cos(angle)+2)*100, (r*Math.sin(angle)+2)*100];
+//   });
+// }
 
 var stopOrder = [
   'Edgware',
