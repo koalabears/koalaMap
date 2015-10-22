@@ -1,4 +1,11 @@
-getTFLArrivals(handleArrivalData);
+var socket = io();
+
+socket.on('update poly', function(poly){
+  var newPoly = poly;
+  console.log(newPoly);
+});
+
+setInterval(getTFLArrivals(handleArrivalData), 3000);
 
 function getTFLArrivals(callback) {
   var arrivalDataRequest = new XMLHttpRequest();
@@ -72,7 +79,7 @@ function drawPolygon(poly) {
   var startData = ourTransform(poly);
   // var
   var newData = poly.map(function(point) {
-    return [point[0]*.5, point[1]*.5];
+    return [point[0]*0.5, point[1]*0.5];
   });
   newData = ourTransform(newData);
   var path = container.append("svg:path")
@@ -84,6 +91,7 @@ function drawPolygon(poly) {
   // .style("fill", "grey")
 
   console.log('document: ', document.querySelector('#oldPath'));
+
 
   var newPoly = [
     [1, 1],
@@ -214,5 +222,5 @@ function drawPolygon(poly) {
 }
 
 function updatePoints(points) {
-  
+
 }

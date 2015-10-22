@@ -2,10 +2,9 @@ var env = require('env2')('./config.env');
 var https = require('https');
 var querystring = require('querystring');
 
-function handleArrivalDataRequests(request, response) {
-  makeArrivalDataRequests(function(rawArrivalData) {
-    sendResponse(response, rawArrivalData);
-  });
+function handleArrivalDataRequests(callback) {
+  console.log("im' handleArrivalDataRequests");
+  makeArrivalDataRequests(callback);
 }
 
 function sendResponse(arrivalDataResponse, arrivalData) {
@@ -16,7 +15,7 @@ function sendResponse(arrivalDataResponse, arrivalData) {
 
 function processData(rawArrivalData) {
   var allStationArrivalInfo, clockwiseData;
-  var allStationArrivalInfo = rawArrivalData.map(function(stationArrivalInfo) {
+  allStationArrivalInfo = rawArrivalData.map(function(stationArrivalInfo) {
     return {
       stationNumber: getStationNumber(stationArrivalInfo.stationName),
       direction: getDirectionFrom(stationArrivalInfo.towards),
@@ -70,7 +69,7 @@ function createArrivalDataRequestOptions(){
     hostname : 'api.tfl.gov.uk',
     path : '/Line/Circle/arrivals',
     method : 'GET'
-  }
+  };
 }
 
 function createArrivalOutputData(arrivalData) {
@@ -95,7 +94,7 @@ function getShortestTimeForStationNumber(targetStationNumber, allStationArrivalI
 
 function removeUnfoundStations(allStationArrivalInfo) {
   return allStationArrivalInfo.filter(function(stationArrivalInfo) {
-    return stationArrivalInfo.stationNumber !== -1
+    return stationArrivalInfo.stationNumber !== -1;
   });
 }
 
@@ -168,7 +167,7 @@ function draw(data) {
 
   var path = svgContainer.
     append("path").data([points]).attr("d",
-    d3.svg.line().tension(.5).interpolate("cardinal-closed"));
+    d3.svg.line().tension(0.5).interpolate("cardinal-closed"));
 
   svgContainer.selectAll(".point")
       .data(points)
