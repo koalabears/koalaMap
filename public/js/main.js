@@ -1,4 +1,3 @@
-
 getTFLArrivals(handleArrivalData);
 
 function getTFLArrivals(callback) {
@@ -30,7 +29,7 @@ function handleArrivalData(arrivalData) {
 
 
 function createPolygonCoordinates(values) {
-    console.log('values', values);
+  console.log('values', values);
   var angleStep = (2 * Math.PI) / values.length;
   return values.map(function(value, valueIndex) {
     var radius = value + 1;
@@ -61,57 +60,102 @@ function drawPolygon(poly) {
     .attr("height", 667);
 
 
-        var pathFunction = d3.svg.line()
-            .x(function (d) {return d[0];})
-            .y(function (d) {return d[1];})
-            .interpolate("cardinal-closed");
+  var pathFunction = d3.svg.line()
+    .x(function(d) {
+      return d[0];
+    })
+    .y(function(d) {
+      return d[1];
+    })
+    .interpolate("cardinal-closed");
 
   var startData = ourTransform(poly);
-  var newData = startData.map(function(point) {
-    return [point[0] + 50, point[1]+50];
+  // var
+  var newData = poly.map(function(point) {
+    return [point[0]*.5, point[1]*.5];
   });
+  newData = ourTransform(newData);
   var path = container.append("svg:path")
     .attr('id', "oldPath")
     .attr("d", pathFunction(startData));
-    // .data([ourTransform(poly)])
-    // .enter()
-    // .attr('stroke-width', 4)
-    // .style("fill", "grey")
+  // .data([ourTransform(poly)])
+  // .enter()
+  // .attr('stroke-width', 4)
+  // .style("fill", "grey")
 
-    console.log('document: ',  document.querySelector('#oldPath'));
+  console.log('document: ', document.querySelector('#oldPath'));
 
-var newPoly = [[1,1],[0,0],[0,0],[0,0],[0,0],[0.5,1],[0.9,1.0],[10,10],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0]];
-// document.getElementById("oldPath").remove();
+  var newPoly = [
+    [1, 1],
+    [0, 0],
+    [0, 0],
+    [0, 0],
+    [0, 0],
+    [0.5, 1],
+    [0.9, 1.0],
+    [10, 10],
+    [0, 0],
+    [0, 0],
+    [0, 0],
+    [0, 0],
+    [0, 0],
+    [0, 0],
+    [0, 0],
+    [0, 0],
+    [0, 0],
+    [0, 0],
+    [0, 0],
+    [0, 0],
+    [0, 0],
+    [0, 0],
+    [0, 0],
+    [0, 0],
+    [0, 0],
+    [0, 0],
+    [0, 0],
+    [0, 0],
+    [0, 0],
+    [0, 0],
+    [0, 0],
+    [0, 0],
+    [0, 0],
+    [0, 0],
+    [0, 0]
+  ];
+  // document.getElementById("oldPath").remove();
 
-setTimeout(function() {
-  var toChange = d3.select('#oldPath');
-  console.log(toChange);
-  d3.select('#oldPath')
-    .data([newData])
-    .attr('d', pathFunction)
-    .transition()
-    .duration(1000);
-}, 1500);
-    // .delay(1500);
-    // .transition()
-    // .duration(750)
-    // .style('fill', 'red')
-    // .attr('stroke', 'green');
+  // setTimeout(function() {
+    var toChange = d3.select('#oldPath');
+    console.log(toChange);
+    d3.select('#oldPath')
+      .data([newData])
+      .transition()
+      .ease('linear')
+      .duration(5000)
+      .attr('d', pathFunction)
+      // .transition()
+      // .duration(1000);
+  // }, 1500);
+  // .delay(1500);
+  // .transition()
+  // .duration(750)
+  // .style('fill', 'red')
+  // .attr('stroke', 'green');
 
- // bundle | basis | linear | cardinal is also an option
-    // .data([newPoly])
+  // bundle | basis | linear | cardinal is also an option
+  // .data([newPoly])
 
-    console.log(d3.select('#oldPath'));
-    // container.append("path")
-    // .transition()
-    // .delay(500)
-    // .duration(750)
-    // .attr('stroke-width', 4)
-    // .style("fill", "pink")
-    // .attr("d", d3.svg.line()
-    //   .tension(0.5)
-    //   .interpolate("cardinal-closed")
-    // );
+  console.log(d3.select('#oldPath'));
+  // container.append("path")
+  // .transition()
+  // .delay(500)
+  // .duration(750)
+  // .attr('stroke-width', 4)
+  // .style("fill", "pink")
+  // .attr("d", d3.svg.line()
+  //   .tension(0.5)
+  //   .interpolate("cardinal-closed")
+  // );
 
 
   circlePos = ourTransform([
@@ -120,7 +164,7 @@ setTimeout(function() {
 
 
   container.append("circle")
-    .attr("r", 120)
+    .attr("r", 240)
     .attr("cx", circlePos[0])
     .attr('stroke-width', 5)
     .attr('stroke', 'black')
@@ -167,4 +211,8 @@ setTimeout(function() {
       .style("fill", "black");
   });
 
+}
+
+function updatePoints(points) {
+  
 }
