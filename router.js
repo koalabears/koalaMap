@@ -1,6 +1,6 @@
 var handler = require('./handler.js');
 var fs = require('fs');
-var tfl = require('./tflDataGetter.js')
+var tfl = require('./tflDataGetter.js');
 
 var routes = {
   "/" : handler.home,
@@ -10,6 +10,7 @@ var routes = {
   '/main.css' : handler.mainCss,
   '/index' : handler.index,
   '/arrivalData' : tfl.handleArrivalDataRequests
+
 };
 
 module.exports = function(req, res){

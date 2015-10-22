@@ -1,6 +1,4 @@
-// var timeUntilStation = [1, 0.2, 0.8, 1, 0.1, 0.6, 0.9, 0.7, 0.3, 1, 0.2, 0.8, 1, 0.1, 0.6, 0.9, 0.7, 0.3, 0.4, 0.5, 0, 0.2, 0.8, 1, 0.1, 0.6, 0.9, 0.7, 0.3, 0.4, 0.5, 0.6, 1, 0.8, 0.9, 1];
-// var blobCoords = createPolygonCoordinates(timeUntilStation);
-// drawPolygon(blobCoords);
+
 getTFLArrivals(handleArrivalData);
 
 function getTFLArrivals(callback) {
@@ -12,10 +10,10 @@ function getTFLArrivals(callback) {
       if (arrivalDataStatusCode === 200) {
         callback(JSON.parse(arrivalDataRequest.responseText));
       } else {
-        console.log('request failed with status code' + arrivalDataStatusCode)
+        console.log('request failed with status code' + arrivalDataStatusCode);
       }
     }
-  }
+  };
   arrivalDataRequest.send();
 }
 
@@ -25,6 +23,11 @@ function handleArrivalData(arrivalData) {
   console.log(blobCoordinates);
   drawPolygon(blobCoordinates);
 }
+
+// var timeUntilStation = [1, 0.2, 0.8, 1, 0.1, 0.6, 0.9, 0.7, 0.3, 1, 0.2, 0.8, 1, 0.1, 0.6, 0.9, 0.7, 0.3, 0.4, 0.5, 0, 0.2, 0.8, 1, 0.1, 0.6, 0.9, 0.7, 0.3, 0.4, 0.5, 0.6, 1, 0.8, 0.9, 1];
+// var blobCoords = createPolygonCoordinates(timeUntilStation);
+// drawPolygon(blobCoords);
+
 
 function createPolygonCoordinates(values) {
     console.log('values', values);
@@ -57,15 +60,59 @@ function drawPolygon(poly) {
     .attr("width", 1000)
     .attr("height", 667);
 
-  var path = container.append("path")
-    .data([ourTransform(poly)])
-    // .attr('stroke', 'red')
-    .attr('stroke-width', 4)
-    .style("fill", "grey")
-    .attr("d", d3.svg.line()
-      .tension(0.5)
-      .interpolate("cardinal-closed")
-    );
+
+        var pathFunction = d3.svg.line()
+            .x(function (d) {return d[0];})
+            .y(function (d) {return d[1];})
+            .interpolate("cardinal-closed");
+
+  var startData = ourTransform(poly);
+  var newData = startData.map(function(point) {
+    return [point[0] + 50, point[1]+50];
+  });
+  var path = container.append("svg:path")
+    .attr('id', "oldPath")
+    .attr("d", pathFunction(startData));
+    // .data([ourTransform(poly)])
+    // .enter()
+    // .attr('stroke-width', 4)
+    // .style("fill", "grey")
+
+    console.log('document: ',  document.querySelector('#oldPath'));
+
+var newPoly = [[1,1],[0,0],[0,0],[0,0],[0,0],[0.5,1],[0.9,1.0],[10,10],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0]];
+// document.getElementById("oldPath").remove();
+
+setTimeout(function() {
+  var toChange = d3.select('#oldPath');
+  console.log(toChange);
+  d3.select('#oldPath')
+    .data([newData])
+    .attr('d', pathFunction)
+    .transition()
+    .duration(1000);
+}, 1500);
+    // .delay(1500);
+    // .transition()
+    // .duration(750)
+    // .style('fill', 'red')
+    // .attr('stroke', 'green');
+
+ // bundle | basis | linear | cardinal is also an option
+    // .data([newPoly])
+
+    console.log(d3.select('#oldPath'));
+    // container.append("path")
+    // .transition()
+    // .delay(500)
+    // .duration(750)
+    // .attr('stroke-width', 4)
+    // .style("fill", "pink")
+    // .attr("d", d3.svg.line()
+    //   .tension(0.5)
+    //   .interpolate("cardinal-closed")
+    // );
+
 
   circlePos = ourTransform([
     [0, 0]
@@ -78,7 +125,7 @@ function drawPolygon(poly) {
     .attr('stroke-width', 5)
     .attr('stroke', 'black')
     .attr("cy", circlePos[1])
-    .style("fill", "black");
+    .style("fill", "none");
 
   poly.forEach(function(coord) {
     var line = coord;
