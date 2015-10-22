@@ -1,9 +1,68 @@
 var socket = io();
+var container;
+
+function deepCopy(obj) {
+    if (Object.prototype.toString.call(obj) === '[object Array]') {
+        var out = [], i = 0, len = obj.length;
+        for ( ; i < len; i++ ) {
+            out[i] = arguments.callee(obj[i]);
+        }
+        return out;
+    }
+    if (typeof obj === 'object') {
+        var out = {}, i;
+        for ( i in obj ) {
+            out[i] = arguments.callee(obj[i]);
+        }
+        return out;
+    }
+    return obj;
+}
+
+window.onload = function() {
+  container = d3.select("#polygon").append("svg")
+    .attr("width", 1000)
+    .attr("height", 667);
+}
+
+// attach the .equals method to Array's prototype to call it on any array
+Array.prototype.equals = function (array) {
+    // if the other array is a falsy value, return
+    if (!array)
+        return false;
+
+    // compare lengths - can save a lot of time
+    if (this.length != array.length)
+        return false;
+
+    for (var i = 0, l=this.length; i < l; i++) {
+        // Check if we have nested arrays
+        if (this[i] instanceof Array && array[i] instanceof Array) {
+            // recurse into the nested arrays
+            if (!this[i].equals(array[i]))
+                return false;
+        }
+        else if (this[i] != array[i]) {
+            // Warning - two different object instances will never be equal: {x:20} != {x:20}
+            return false;
+        }
+    }
+    return true;
+}
 
 socket.on('update poly', function(poly){
   var newPoly = poly;
-  console.log(newPoly);
+  pushNewBlob(JSON.parse(newPoly));
 });
+
+var blobData = [];
+
+function pushNewBlob(newBlobData) {
+  if (blobData === [] || !newBlobData.equals(blobData)) {
+    blobData = newBlobData;
+    handleArrivalData(deepCopy(newBlobData));
+  }
+}
 
 function getTFLArrivals(callback) {
   var arrivalDataRequest = new XMLHttpRequest();
@@ -56,10 +115,6 @@ function transform2D(vectorArray, transform, scale) {
 function drawPolygon(poly) {
   updatePoints(poly);
   var scaling = 2;
-
-  var container = d3.select("#polygon").append("svg")
-    .attr("width", 1000)
-    .attr("height", 667);
 
   var pathFunction = d3.svg.line()
     .x(function(d) {
