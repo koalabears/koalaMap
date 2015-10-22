@@ -71,13 +71,14 @@ function drawPolygon(poly) {
 
   var startData = ourTransform(poly);
   var newData = poly.map(function(point) {
-    return [point[0]*.5, point[1]*.5];
+    return [point[0]*0.5, point[1]*0.5];
   });
   newData = ourTransform(newData);
 
   var path = container.append("svg:path")
     .attr('id', "oldPath")
-    .style("fill", "yellow")
+    .style("fill", "#0099CC")
+    .attr("stroke-width", 5)
     .attr("d", pathFunction(startData));
 
   setInterval(function() {
@@ -90,13 +91,22 @@ function drawPolygon(poly) {
   ])[0];
 
 
+
   container.append("circle")
     .attr("r", 120)
     .attr("cx", circlePos[0])
     .attr('stroke-width', 5)
     .attr('stroke', 'black')
     .attr("cy", circlePos[1])
-    .style("fill", "none");
+    .style("fill", "white");
+
+    container.append("circle")
+      .attr("r", 110)
+      .attr("cx", circlePos[0])
+      .attr('stroke-width', 5)
+      .attr('stroke', 'yellow')
+      .attr("cy", circlePos[1])
+      .style("fill", "#B6B6B4");
 
   poly.forEach(function(coord) {
     var line = coord;
@@ -111,8 +121,8 @@ function drawPolygon(poly) {
       .data([lineToDraw])
       .attr('fill', 'transparent')
       .attr('stroke', 'black')
-      .attr('stroke-width', 0.4)
-      .style("stroke-opacity", 0.4)
+      .attr('stroke-width', 1)
+      .style("stroke-opacity", 0.5)
       .style("stroke-dasharray", ("3, 6"))
       .attr('id', 'myLine')
       .attr('fill', 'none')
@@ -123,7 +133,7 @@ function drawPolygon(poly) {
     pos = ourTransform([coord])[0];
 
     container.append("circle")
-      .attr("r", 12)
+      .attr("r", 5)
       .attr("cx", pos[0])
       .attr("stroke", "black")
       .attr("stroke-width", 2)
@@ -131,12 +141,20 @@ function drawPolygon(poly) {
       .style("fill", "white");
 
     container.append("circle")
-      .attr("r", 6)
+      .attr("r", 1)
       .attr("cx", pos[0])
       .attr("stroke", "none")
       .attr("cy", pos[1])
       .style("fill", "black");
   });
+  container.append("text")
+    .attr("font-family", "sans-serif")
+    .attr("x", 214)
+    .attr('font-size', "1.5em")
+    .attr('fill', 'black')
+    .attr('stroke', 'black')
+    .attr("y", 308)
+    .text("MIND THE MAP");
 
 }
 
@@ -146,7 +164,7 @@ function animate(pathCreate, newData) {
     .transition()
     .ease('linear')
     .duration(1000)
-    .attr('d', pathCreate)
+    .attr('d', pathCreate);
 }
 
 function updatePoints(points) {
@@ -155,7 +173,7 @@ function updatePoints(points) {
   return points.map(function (point) {
     var norm = vectorNormal(point);
     if (vectorLength(point) < 1 + velocity) {
-      return norm
+      return norm;
     } else {
       return vectorPlus(point, vectorMult(norm, -1*velocity));
     }
