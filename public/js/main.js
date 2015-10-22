@@ -1,8 +1,33 @@
-var timeUntilStation = [1, 0.2, 0.8, 1, 0.1, 0.6, 0.9, 0.7, 0.3, 1, 0.2, 0.8, 1, 0.1, 0.6, 0.9, 0.7, 0.3, 0.4, 0.5, 0, 0.2, 0.8, 1, 0.1, 0.6, 0.9, 0.7, 0.3, 0.4, 0.5, 0.6, 1, 0.8, 0.9, 1];
-var blobCoords = createPolygonCoordinates(timeUntilStation);
-drawPolygon(blobCoords);
+// var timeUntilStation = [1, 0.2, 0.8, 1, 0.1, 0.6, 0.9, 0.7, 0.3, 1, 0.2, 0.8, 1, 0.1, 0.6, 0.9, 0.7, 0.3, 0.4, 0.5, 0, 0.2, 0.8, 1, 0.1, 0.6, 0.9, 0.7, 0.3, 0.4, 0.5, 0.6, 1, 0.8, 0.9, 1];
+// var blobCoords = createPolygonCoordinates(timeUntilStation);
+// drawPolygon(blobCoords);
+getTFLArrivals(handleArrivalData);
+
+function getTFLArrivals(callback) {
+  var arrivalDataRequest = new XMLHttpRequest();
+  arrivalDataRequest.open('GET', '/arrivalData');
+  arrivalDataRequest.onreadystatechange = function() {
+    var arrivalDataStatusCode = arrivalDataRequest.status;
+    if (arrivalDataRequest.readyState === 4) {
+      if (arrivalDataStatusCode === 200) {
+        callback(JSON.parse(arrivalDataRequest.responseText));
+      } else {
+        console.log('request failed with status code' + arrivalDataStatusCode)
+      }
+    }
+  }
+  arrivalDataRequest.send();
+}
+
+function handleArrivalData(arrivalData) {
+  console.log(arrivalData);
+  var blobCoordinates = createPolygonCoordinates(arrivalData);
+  console.log(blobCoordinates);
+  drawPolygon(blobCoordinates);
+}
 
 function createPolygonCoordinates(values) {
+    console.log('values', values);
   var angleStep = (2 * Math.PI) / values.length;
   return values.map(function(value, valueIndex) {
     var radius = value + 1;

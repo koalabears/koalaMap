@@ -1,30 +1,77 @@
-var mainWrapper = document.querySelector('div.wrapper');
-var req = new XMLHttpRequest();
-req.open('GET', 'https://api.tfl.gov.uk/Line/Circle/arrivals?app_id=835f25cf&app_key=dc0f2d114ba4e4fa542473a670755267');
-req.onreadystatechange = function() {
-  if (req.readyState === 4) {
-    if (req.status === 200) {
-      var data = JSON.parse(req.responseText);
-      mainWrapper.innerHTML = 'fetch!';
-      allStationArrivalInfo = data.map(function(stationArrivalInfo) {
-        return {
-          stationNumber: getStationNumber(stationArrivalInfo.stationName),
-          direction: getDirectionFrom(stationArrivalInfo.towards),
-          time: stationArrivalInfo.timeToStation
-        };
-      });
-      allStationArrivalInfo = removeUnfoundStations(allStationArrivalInfo);
-      clockwiseData = filterByDirection('clockwise', allStationArrivalInfo);
-      var numStations = stopOrder.length;
-      var points = dataToCoords(numStations, createArrivalOutputData(clockwiseData));
-      console.log(points);
-      draw(points);
-    } else {
-      console.log('error. state = ', req.status);
-    }
+var env = require('env2')('./config.env');
+var https = require('https');
+var querystring = require('querystring');
+
+function handleArrivalDataRequests(request, response) {
+  makeArrivalDataRequests(function(rawArrivalData) {
+    sendResponse(response, rawArrivalData);
+  });
+}
+
+function sendResponse(arrivalDataResponse, arrivalData) {
+  var processedData = processData(arrivalData);
+  arrivalDataResponse.writeHead(200, {'Content-Type': 'text/plain'});
+  arrivalDataResponse.end(processedData);
+}
+
+function processData(rawArrivalData) {
+  var allStationArrivalInfo, clockwiseData;
+  var allStationArrivalInfo = rawArrivalData.map(function(stationArrivalInfo) {
+    return {
+      stationNumber: getStationNumber(stationArrivalInfo.stationName),
+      direction: getDirectionFrom(stationArrivalInfo.towards),
+      time: stationArrivalInfo.timeToStation
+    };
+  });
+  allStationArrivalInfo = removeUnfoundStations(allStationArrivalInfo);
+  clockwiseData = filterByDirection('clockwise', allStationArrivalInfo);
+  return JSON.stringify(createArrivalOutputData(clockwiseData));
+}
+
+function makeArrivalDataRequests(callback) {
+  var options = createArrivalDataRequestOptions();
+  var apiKey = process.env.app_key;
+  var apiId = process.env.app_id;
+  // path : '/Line/Circle/arrivals?app_id=' + apiKey + '&app_key=' + apiId,
+  var postData = querystring.stringify({
+      app_key: apiKey,
+      app_id: apiId
+  });
+  var body = '';
+  var request = https.request(options, function(response) {
+    response.on('data', function(chunk) {
+      body += chunk;
+    });
+    response.on('end', function(){
+      // console.log('body', body);
+      // console.log('body end');
+      callback(JSON.parse(body));
+    });
+  });
+  request.end(postData);
+  // var arrivalDataRequest = new XMLHttpRequest();
+  // arrivalDataRequest.open('GET', createArrivalDataRequestURL());
+  // arrivalDataRequest.onreadystatechange = function() {
+  //   if (arrivalDataRequest.readyState === 4) {
+  //     if (arrivalDataRequest.status === 200) {
+  //       callback(JSON.parse(arrivalDataRequest.responseText));
+  //     } else {
+  //       console.log('error. state = ', arrivalDataRequest.status);
+  //     }
+  //   }
+  // }
+  // arrivalDataRequest.send();
+}
+
+function createArrivalDataRequestOptions(){
+  // var apiKey = process.env.app_key;
+  // var apiId = process.env.app_id;
+  return {
+    hostname : 'api.tfl.gov.uk',
+    path : '/Line/Circle/arrivals',
+    method : 'GET'
   }
 }
-req.send();
 
 function createArrivalOutputData(arrivalData) {
   var out = stopOrder.map(function(stopName, stopIndex) {
@@ -153,3 +200,7 @@ function draw(data) {
   //   };
   // }
 }
+
+module.exports = {
+  handleArrivalDataRequests: handleArrivalDataRequests
+};
