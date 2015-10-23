@@ -24,7 +24,7 @@ window.onload = function() {
   container = d3.select("#polygon").append("svg")
     .attr("width", 1000)
     .attr("height", 667);
-}
+};
 
 // attach the .equals method to Array's prototype to call it on any array
 Array.prototype.equals = function (array) {
@@ -49,7 +49,7 @@ Array.prototype.equals = function (array) {
         }
     }
     return true;
-}
+};
 
 socket.on('update poly', function(poly){
   var newPoly = poly;
@@ -150,11 +150,11 @@ function drawPolygon(blobCoords_) {
 
   drawCentreCircleTo(container);
 
-  poly.forEach(function(coord) {
+  poly.forEach(function(coord, index) {
     drawStationLine(coord, container);
     pos = ourTransform([coord])[0];
 
-    drawArrivalCircle(pos, container);
+    drawArrivalCircle(pos, container, index);
   });
 
   animate();
@@ -194,8 +194,13 @@ function drawStationLine(coord, container) {
     );
 }
 
-function drawArrivalCircle(pos, container) {
+function drawArrivalCircle(pos, container, index) {
+var innerCircleId = 'innerCircleId' + index;
+var outerCircleId = 'outerCircleId' + index;
+
   container.append("circle")
+    .attr("class", "outerCircle")
+    .attr("id", outerCircleId)
     .attr("r", 5)
     .attr("cx", pos[0])
     .attr("stroke", "black")
@@ -204,12 +209,16 @@ function drawArrivalCircle(pos, container) {
     .style("fill", "white");
 
   container.append("circle")
+    .attr("class", "innerCircle")
+    .attr("id", innerCircleId)
     .attr("r", 1)
     .attr("cx", pos[0])
     .attr("stroke", "none")
     .attr("cy", pos[1])
     .style("fill", "black");
 }
+
+
 
 function drawCentreCircleTo(container) {
   var circlePos = ourTransform([
@@ -239,25 +248,76 @@ function drawCentreCircleTo(container) {
 function animate() {
   setInterval(function() {
     poly = updatePoints(poly);
-    newData =  ourTransform(poly)
+    newData =  ourTransform(poly);
     d3.select('#oldPath')
       .data([newData])
       .transition()
       .ease('linear')
       .duration(1000)
-      .attr('d', pathFunction);  }, 1000);
+      .attr('d', pathFunction);
+
+    d3.selectAll(".innerCircle")
+      .transition()
+      .attr("cx", function(d, i) {
+        return newData[i][0];
+      })
+      .attr("cy", function(d, i) {
+        return newData[i][1];
+      })
+      .ease('linear')
+      .duration(1000);
+      // .attr('d', pathFunction);
+
+      d3.selectAll(".outerCircle")
+        .transition()
+        .attr("cx", function(d, i) {
+          return newData[i][0];
+        })
+        .attr("cy", function(d, i) {
+          return newData[i][1];
+        })
+        .ease('linear')
+        .duration(1000);
+        // .attr('d', pathFunction);  }, 1000);
+
+  }, 1000);
+
 }
 
 function animateFast(pathCreate) {
   setInterval(function() {
     // poly = updatePoints(poly);
-    newData =  ourTransform(poly)
+    newData =  ourTransform(poly);
     d3.select('#oldPath')
       .data([newData])
       .transition()
       .ease('linear')
       .duration(1000)
-      .attr('d', pathFunction);  }, 1000);
+      .attr('d', pathFunction);
+
+      d3.selectAll(".innerCircle")
+        .transition()
+        .attr("cx", function(d, i) {
+          return newData[i][0];
+        })
+        .attr("cy", function(d, i) {
+          return newData[i][1];
+        })
+        .ease('linear')
+        .duration(1000);
+        // .attr('d', pathFunction);
+
+        d3.selectAll(".outerCircle")
+          .transition()
+          .attr("cx", function(d, i) {
+            return newData[i][0];
+          })
+          .attr("cy", function(d, i) {
+            return newData[i][1];
+          })
+          .ease('linear')
+          .duration(1000);
+        }, 1000);
 }
 
 function updatePoints(points) {
