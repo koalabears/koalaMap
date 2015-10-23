@@ -22,7 +22,7 @@ function repeatReq() {
 }
 
   repeatReq();
-  setInterval(repeatReq, 5000);
+  setInterval(repeatReq, 50*1000);
 
 }
 
