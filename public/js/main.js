@@ -23,7 +23,7 @@ function deepCopy(obj) {
 window.onload = function() {
   container = d3.select("#polygon").append("svg")
     .attr("width", 1000)
-    .attr("height", 667);
+    .attr("height", 580);
 };
 
 // attach the .equals method to Array's prototype to call it on any array
@@ -160,7 +160,7 @@ function drawPolygon(blobCoords_) {
   animate();
 
   container.append("text")
-    .attr("font-family", "sans-serif")
+    .attr("font-family", "futura")
     .attr("x", 214)
     .attr('font-size', "1.5em")
     .attr('fill', 'black')

@@ -4,6 +4,30 @@
   stroke: #FFCC00;
   stroke-width: 1;
 }
+
+h1 {
+  font-family: futura;
+  padding-left: 2.7em;
+}
+
+p {
+  font-family: futura;
+  font-size: 1em;
+  /*padding-left: 50px;*/
+}
+
+.centre {
+    padding-left: 7.7em;
+    padding-top: 1em;
+}
+
+.second {
+  padding-left: 1em;
+}
+
+#polygon {
+    padding-left: 3em;
+}
 /*
 #myLine path{
   background-color: rgba(255,0,0,0.1);
