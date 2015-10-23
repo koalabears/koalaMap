@@ -21,7 +21,7 @@ function repeatReq() {
   });
 }
 
-
+  repeatReq();
   setInterval(repeatReq, 5000);
 
 }
