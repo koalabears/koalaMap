@@ -10,7 +10,6 @@ var routes = {
   '/main.css' : handler.mainCss,
   '/index' : handler.index,
   '/arrivalData' : tfl.handleArrivalDataRequests
-
 };
 
 module.exports = function(req, res){
