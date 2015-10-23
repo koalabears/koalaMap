@@ -1,5 +1,6 @@
 var socket = io();
 var container;
+var poly;
 
 function deepCopy(obj) {
     if (Object.prototype.toString.call(obj) === '[object Array]') {
@@ -58,8 +59,15 @@ socket.on('update poly', function(poly){
 var blobData = [];
 
 function pushNewBlob(newBlobData) {
-  if (blobData === [] || !newBlobData.equals(blobData)) {
-    blobData = newBlobData;
+  console.log(blobData);
+  if (blobData.length === 0) {
+    blobData = deepCopy(newBlobData);
+    console.log('no blob!');
+    blobCoordinates = createPolygonCoordinates(newBlobData);
+    drawPolygon(blobCoordinates);
+  }
+  if (!newBlobData.equals(blobData)) {
+    blobData = deepCopy(newBlobData);
     handleArrivalData(deepCopy(newBlobData));
   }
 }
@@ -82,9 +90,11 @@ function getTFLArrivals(callback) {
 
 function handleArrivalData(arrivalData) {
   console.log(arrivalData);
-  var blobCoordinates = createPolygonCoordinates(arrivalData);
+  poly = createPolygonCoordinates(arrivalData);
+  // var blobCoordinates = createPolygonCoordinates(arrivalData);
   // console.log(blobCoordinates);
-  drawPolygon(blobCoordinates);
+
+  animateFast(pathFunction);
 }
 
 
@@ -111,19 +121,19 @@ function transform2D(vectorArray, transform, scale) {
   });
 }
 
+var pathFunction = d3.svg.line()
+  .x(function(d) {
+    return d[0];
+  })
+  .y(function(d) {
+    return d[1];
+  })
+  .interpolate("cardinal-closed");
 
-function drawPolygon(poly) {
-  updatePoints(poly);
-  var scaling = 2;
 
-  var pathFunction = d3.svg.line()
-    .x(function(d) {
-      return d[0];
-    })
-    .y(function(d) {
-      return d[1];
-    })
-    .interpolate("cardinal-closed");
+function drawPolygon(blobCoords_) {
+  poly = blobCoords_;
+  console.log(poly);
 
   var startData = ourTransform(poly);
   var newData = poly.map(function(point) {
@@ -137,12 +147,72 @@ function drawPolygon(poly) {
     .attr("stroke-width", 5)
     .attr("d", pathFunction(startData));
 
-  setInterval(function() {
-    poly = updatePoints(poly);
-    animate(pathFunction, ourTransform(poly));
-  }, 1000);
 
-  circlePos = ourTransform([
+  drawCentreCircleTo(container);
+
+  poly.forEach(function(coord) {
+    drawStationLine(coord, container);
+    pos = ourTransform([coord])[0];
+
+    drawArrivalCircle(pos, container);
+  });
+
+  animate();
+
+  container.append("text")
+    .attr("font-family", "sans-serif")
+    .attr("x", 214)
+    .attr('font-size', "1.5em")
+    .attr('fill', 'black')
+    .attr('stroke', 'black')
+    .attr("y", 308)
+    .text("MIND THE MAP");
+
+}
+
+function drawStationLine(coord, container) {
+  var scaling = 2;
+  var line = coord;
+  var lineLength = Math.sqrt(line[0] * line[0] + line[1] * line[1]);
+  line = [
+    (line[0] / lineLength) * scaling, (line[1] / lineLength) * scaling
+  ];
+  var lineToDraw = ourTransform([
+    [0, 0], line
+  ]);
+  container.append("path")
+    .data([lineToDraw])
+    .attr('fill', 'transparent')
+    .attr('stroke', 'black')
+    .attr('stroke-width', 1)
+    .style("stroke-opacity", 0.5)
+    .style("stroke-dasharray", ("3, 6"))
+    .attr('id', 'myLine')
+    .attr('fill', 'none')
+    .attr("d", d3.svg.line()
+      .interpolate("linear")
+    );
+}
+
+function drawArrivalCircle(pos, container) {
+  container.append("circle")
+    .attr("r", 5)
+    .attr("cx", pos[0])
+    .attr("stroke", "black")
+    .attr("stroke-width", 2)
+    .attr("cy", pos[1])
+    .style("fill", "white");
+
+  container.append("circle")
+    .attr("r", 1)
+    .attr("cx", pos[0])
+    .attr("stroke", "none")
+    .attr("cy", pos[1])
+    .style("fill", "black");
+}
+
+function drawCentreCircleTo(container) {
+  var circlePos = ourTransform([
     [0, 0]
   ])[0];
 
@@ -164,63 +234,30 @@ function drawPolygon(poly) {
       .attr("cy", circlePos[1])
       .style("fill", "#B6B6B4");
 
-  poly.forEach(function(coord) {
-    var line = coord;
-    var lineLength = Math.sqrt(line[0] * line[0] + line[1] * line[1]);
-    line = [
-      (line[0] / lineLength) * scaling, (line[1] / lineLength) * scaling
-    ];
-    var lineToDraw = ourTransform([
-      [0, 0], line
-    ]);
-    container.append("path")
-      .data([lineToDraw])
-      .attr('fill', 'transparent')
-      .attr('stroke', 'black')
-      .attr('stroke-width', 1)
-      .style("stroke-opacity", 0.5)
-      .style("stroke-dasharray", ("3, 6"))
-      .attr('id', 'myLine')
-      .attr('fill', 'none')
-      .attr("d", d3.svg.line()
-        .interpolate("linear")
-      );
-
-    pos = ourTransform([coord])[0];
-
-    container.append("circle")
-      .attr("r", 5)
-      .attr("cx", pos[0])
-      .attr("stroke", "black")
-      .attr("stroke-width", 2)
-      .attr("cy", pos[1])
-      .style("fill", "white");
-
-    container.append("circle")
-      .attr("r", 1)
-      .attr("cx", pos[0])
-      .attr("stroke", "none")
-      .attr("cy", pos[1])
-      .style("fill", "black");
-  });
-  container.append("text")
-    .attr("font-family", "sans-serif")
-    .attr("x", 214)
-    .attr('font-size', "1.5em")
-    .attr('fill', 'black')
-    .attr('stroke', 'black')
-    .attr("y", 308)
-    .text("MIND THE MAP");
-
 }
 
-function animate(pathCreate, newData) {
-  d3.select('#oldPath')
-    .data([newData])
-    .transition()
-    .ease('linear')
-    .duration(1000)
-    .attr('d', pathCreate);
+function animate() {
+  setInterval(function() {
+    poly = updatePoints(poly);
+    newData =  ourTransform(poly)
+    d3.select('#oldPath')
+      .data([newData])
+      .transition()
+      .ease('linear')
+      .duration(1000)
+      .attr('d', pathFunction);  }, 1000);
+}
+
+function animateFast(pathCreate) {
+  setInterval(function() {
+    // poly = updatePoints(poly);
+    newData =  ourTransform(poly)
+    d3.select('#oldPath')
+      .data([newData])
+      .transition()
+      .ease('linear')
+      .duration(1000)
+      .attr('d', pathFunction);  }, 1000);
 }
 
 function updatePoints(points) {
