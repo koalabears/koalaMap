@@ -3,7 +3,6 @@ var https = require('https');
 var querystring = require('querystring');
 
 function handleArrivalDataRequests(callback) {
-  console.log("im' handleArrivalDataRequests");
   makeArrivalDataRequests(callback);
 }
 
@@ -24,7 +23,6 @@ function processData(rawArrivalData) {
   });
   allStationArrivalInfo = removeUnfoundStations(allStationArrivalInfo);
   clockwiseData = filterByDirection('clockwise', allStationArrivalInfo);
-  console.log(createArrivalOutputData(clockwiseData));
   return JSON.stringify(createArrivalOutputData(clockwiseData));
 }
 

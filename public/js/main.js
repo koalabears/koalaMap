@@ -5,40 +5,43 @@ var poly;
 function deepCopy(obj) {
     if (Object.prototype.toString.call(obj) === '[object Array]') {
         return obj.map(function(elem) {
-          return arguments.callee(obj[i]);
+            return deepCopy(elem);
         });
+    } else if (typeof obj === 'object') {
+        return Object.keys(obj).map(function(key) {
+          return deepCopy(obj[key]);
+        });
+    } else {
+      return obj;
     }
 }
 
 window.onload = function() {
   container = d3.select("#polygon").append("svg")
     .attr("width", 1000)
-    .attr("height", 580);
+    .attr("height", 667);
 };
 
-// attach the .equals method to Array's prototype to call it on any array
-Array.prototype.equals = function (array) {
-    // if the other array is a falsy value, return
-    if (!array)
-        return false;
+function deepEquals(lArray, rArray) {
+  var result = true;
+  if ((!lArray && rArray) || (lArray && !rArray)) {
+    return false;
+  }
 
-    // compare lengths - can save a lot of time
-    if (this.length != array.length)
-        return false;
+  if (lArray.length !== rArray.length) {
+    return false;
+  }
 
-    for (var i = 0, l=this.length; i < l; i++) {
-        // Check if we have nested arrays
-        if (this[i] instanceof Array && array[i] instanceof Array) {
-            // recurse into the nested arrays
-            if (!this[i].equals(array[i]))
-                return false;
-        }
-        else if (this[i] != array[i]) {
-            // Warning - two different object instances will never be equal: {x:20} != {x:20}
-            return false;
-        }
+  lArray.forEach(function(elem, index) {
+    if (elem instanceof Array && rArray[index] instanceof Array) {
+      if (!deepEquals(elem, rArray[index])) {
+        result = false;
+      }
+    } else if (elem != rArray[index]) {
+      result = false;
     }
-    return true;
+  });
+  return result;
 };
 
 socket.on('update poly', function(poly){
@@ -49,14 +52,12 @@ socket.on('update poly', function(poly){
 var blobData = [];
 
 function pushNewBlob(newBlobData) {
-  console.log(blobData);
   if (blobData.length === 0) {
     blobData = deepCopy(newBlobData);
-    console.log('no blob!');
     blobCoordinates = createPolygonCoordinates(newBlobData);
     drawPolygon(blobCoordinates);
   }
-  if (!newBlobData.equals(blobData)) {
+  if (!deepEquals(newBlobData, blobData)) {
     blobData = deepCopy(newBlobData);
     handleArrivalData(deepCopy(newBlobData));
   }
@@ -79,17 +80,12 @@ function getTFLArrivals(callback) {
 }
 
 function handleArrivalData(arrivalData) {
-  console.log(arrivalData);
   poly = createPolygonCoordinates(arrivalData);
-  // var blobCoordinates = createPolygonCoordinates(arrivalData);
-  // console.log(blobCoordinates);
-
   animateFast(pathFunction);
 }
 
 
 function createPolygonCoordinates(values) {
-  // console.log('values', values);
   var angleStep = (2 * Math.PI) / values.length;
   return values.map(function(value, valueIndex) {
     var radius = value + 1;
@@ -123,7 +119,6 @@ var pathFunction = d3.svg.line()
 
 function drawPolygon(blobCoords_) {
   poly = blobCoords_;
-  console.log(poly);
 
   var startData = ourTransform(poly);
   var newData = poly.map(function(point) {
@@ -150,7 +145,7 @@ function drawPolygon(blobCoords_) {
   animate();
 
   container.append("text")
-    .attr("font-family", "futura")
+    .attr("font-family", "sans-serif")
     .attr("x", 214)
     .attr('font-size', "1.5em")
     .attr('fill', 'black')
@@ -311,7 +306,6 @@ function animateFast(pathCreate) {
 }
 
 function updatePoints(points) {
-  console.log(points);
   var velocity = 1/600;
   return points.map(function (point) {
     var norm = vectorNormal(point);
