@@ -82,15 +82,6 @@ function removeUnfoundStations(allStationArrivalInfo) {
   });
 }
 
-// function dataToCoords(numberOfPoints, values) {
-//   console.log(values);
-//   return values.map(function(value, i) {
-//     var angle = (i/numberOfPoints)*2*Math.PI;
-//     var r = value;
-//     return [(r*Math.cos(angle)+2)*100, (r*Math.sin(angle)+2)*100];
-//   });
-// }
-
 var stopOrder = [
   'Edgware',
   'Baker',
