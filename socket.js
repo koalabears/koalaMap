@@ -17,7 +17,6 @@ function manageConnection(socket){
 function repeatReq() {
   tfl.handleArrivalDataRequests(function(poly){
     socket.emit('update poly', poly);
-    console.log("im socket");
   });
 }
 
