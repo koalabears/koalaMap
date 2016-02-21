@@ -9,7 +9,10 @@ var routes = {
   '/main.js' : handler.mainJs,
   '/main.css' : handler.mainCss,
   '/index' : handler.index,
-  '/arrivalData' : tfl.handleArrivalDataRequests
+  '/arrivalData' : tfl.handleArrivalDataRequests,
+  '/testJs' : handler.testJs,
+  '/test' : handler.test
+
 
 };
 

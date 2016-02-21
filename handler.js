@@ -4,6 +4,8 @@ var fs = require('fs');
 var index = fs.readFileSync(__dirname + '/public/html/index.html');
 var mainJs = fs.readFileSync(__dirname + '/public/js/main.js');
 var mainCss = fs.readFileSync(__dirname + '/public/css/main.css');
+var test = fs.readFileSync(__dirname + '/test/front-end/test.html');
+var testJs = fs.readFileSync(__dirname + '/test/front-end/test.js');
 
 
 var headersHtml = {
@@ -14,6 +16,17 @@ var headersJs = {
 };
 var headersCss = {
   'Content-Type' : 'text/css'
+};
+
+
+handler.test = function(req, res){
+  res.writeHead(200, headersHtml);
+  res.end(test);
+};
+
+handler.testJs = function(req, res){
+  res.writeHead(200, headersJs);
+  res.end(testJs);
 };
 
 
